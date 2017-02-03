@@ -14,21 +14,32 @@ namespace BasicApp.Controllers
             //Note: In live production - check if this shop has already install the app - check other settings in case your app is not free - check for charge id is active/valid
 
             //build redirect url
-            string redirectUrl = 
-                string.Format(
-                "https://{0}/admin/oauth/authorize?client_id={1}&scope={2}&redirect_uri=https://{3}/{4}/auth&state={5}",
-                shop,
-                App.AppId,
-                App.AppScope,
-                App.AppDomain,
-                App.AppInstallControllerName,
-                App.GetInstallState());
+            string redirectUrl = App.GetRedirectUrl(shop);
 
             //Save GetInstallState value
             var state = HttpUtility.ParseQueryString(redirectUrl).Get("state");
-            //save to database
+            //save state to database - later you will need to compare value for security reasons
 
             return Redirect(redirectUrl);
+        }
+
+        //Step 2
+        public ActionResult Auth(string shop,string code,string state)
+        {
+            //compare state value with db value save on install call
+            //if value is not the same stop and exit
+
+            //valid hostname - ends with myshopify.com and does not contain characters other than letters (a-z), numbers (0-9), dots, and hyphens.
+            if (!App.AllowHostName(shop))
+            {
+                //exit
+            }
+
+            //hmac is valid
+
+
+
+            return View();
         }
 
     }
