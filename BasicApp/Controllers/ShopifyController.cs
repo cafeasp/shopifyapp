@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using BasicApp.AppTools;
+using System.Collections.Specialized;
+
 namespace BasicApp.Controllers
 {
     public class ShopifyController : Controller
@@ -24,7 +26,7 @@ namespace BasicApp.Controllers
         }
 
         //Step 2
-        public ActionResult Auth(string shop,string code,string state)
+        public ActionResult Auth(string shop,string code,string state,string hmac,string timestamp)
         {
             //compare state value with db value save on install call
             //if value is not the same stop and exit
@@ -32,15 +34,37 @@ namespace BasicApp.Controllers
             //valid hostname - ends with myshopify.com and does not contain characters other than letters (a-z), numbers (0-9), dots, and hyphens.
             if (!App.AllowHostName(shop))
             {
-                //exit
+                //exit - send this request home
+                return RedirectToAction("Index", "Home");        
             }
 
-            //hmac is valid
+            #region BuildNameValueCollection
+            //verify if hmac is valid - key and value can change depending on shopify
+            var verify = new NameValueCollection();
+            verify.Add("code", code);
+            verify.Add("hmac", hmac);
+            verify.Add("shop", shop);
+            verify.Add("timestamp", timestamp);
+            #endregion
 
+            if (!App.VerifyHmac(verify))
+            {
+                //exit
+                return RedirectToAction("Index", "Home");
+            }
 
+            //get access token url
+            string accessTokenUrl = App.GetAccessTokenUrl(shop);
 
-            return View();
+            //make a call to Shopify and get back shop token
+            string token = new ShopifyClient(shop).GetToken(accessTokenUrl,code);
+
+            //save token to db
+
+            //allow customer to view our app
+            return RedirectToAction("Index", "AppPortal");
         }
 
+        
     }
 }

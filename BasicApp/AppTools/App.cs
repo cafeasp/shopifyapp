@@ -4,6 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Configuration;
 using System.Text.RegularExpressions;
+using System.Collections.Specialized;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BasicApp.AppTools
 {
@@ -17,6 +20,7 @@ namespace BasicApp.AppTools
         public static string AppScope = ConfigurationManager.AppSettings["AppScope"];
         public static string AppDomain = ConfigurationManager.AppSettings["AppDomain"];
         public static string AppInstallControllerName = ConfigurationManager.AppSettings["AppInstallControllerName"];
+
         public static string GetInstallState()
         {
             return Guid.NewGuid().ToString("N");
@@ -41,5 +45,40 @@ namespace BasicApp.AppTools
             return match.Success;
         }
 
+        public static bool VerifyHmac(NameValueCollection queryString)
+        {
+            Func<string, bool, string> replaceChars = (string s, bool isKey) =>
+            {
+                //replace % before replacing &. Else second replace will replace those %25s.
+                string output = (s?.Replace("%", "%25").Replace("&", "%26")) ?? "";
+
+                if (isKey)
+                {
+                    output = output.Replace("=", "%3D");
+                }
+
+                return output;
+            };
+
+            var kvps = queryString.Cast<string>()
+               .Select(s => new { Key = replaceChars(s, true), Value = replaceChars(queryString[s], false) })
+               .Where(kvp => kvp.Key != "signature" && kvp.Key != "hmac")
+               .OrderBy(kvp => kvp.Key)
+               .Select(kvp => $"{kvp.Key}={kvp.Value}");
+
+            var hmacHasher = new HMACSHA256(Encoding.UTF8.GetBytes(App.AppSecret));
+            var hash = hmacHasher.ComputeHash(Encoding.UTF8.GetBytes(string.Join("&", kvps)));
+
+            //Convert bytes back to string, replacing dashes, to get the final signature.
+            var calculatedSignature = BitConverter.ToString(hash).Replace("-", "");
+
+            //Request is valid if the calculated signature matches the signature from the querystring.
+            return calculatedSignature.ToUpper() == queryString.Get("hmac").ToUpper();
+        }
+
+        public static string GetAccessTokenUrl(string shop)
+        {
+            return string.Format("oauth/access_token", shop);
+        }
     }
 }
