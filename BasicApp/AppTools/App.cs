@@ -49,7 +49,7 @@ namespace BasicApp.AppTools
         {
             Func<string, bool, string> replaceChars = (string s, bool isKey) =>
             {
-                //replace % before replacing &. Else second replace will replace those %25s.
+                //replace % before replacing &. else second replace will replace those %25s.
                 string output = (s?.Replace("%", "%25").Replace("&", "%26")) ?? "";
 
                 if (isKey)
@@ -66,13 +66,11 @@ namespace BasicApp.AppTools
                .OrderBy(kvp => kvp.Key)
                .Select(kvp => $"{kvp.Key}={kvp.Value}");
 
-            var hmacHasher = new HMACSHA256(Encoding.UTF8.GetBytes(App.AppSecret));
+            var hmacHasher = new HMACSHA256(Encoding.UTF8.GetBytes(AppSecret));
             var hash = hmacHasher.ComputeHash(Encoding.UTF8.GetBytes(string.Join("&", kvps)));
 
-            //Convert bytes back to string, replacing dashes, to get the final signature.
             var calculatedSignature = BitConverter.ToString(hash).Replace("-", "");
-
-            //Request is valid if the calculated signature matches the signature from the querystring.
+            
             return calculatedSignature.ToUpper() == queryString.Get("hmac").ToUpper();
         }
 

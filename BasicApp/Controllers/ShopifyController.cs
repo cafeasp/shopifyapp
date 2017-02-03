@@ -26,28 +26,22 @@ namespace BasicApp.Controllers
         }
 
         //Step 2
-        public ActionResult Auth(string shop,string code,string state,string hmac,string timestamp)
+        public ActionResult Auth(string shop,string code,string state)
         {
+            //security check 1
             //compare state value with db value save on install call
             //if value is not the same stop and exit
 
+            //security check 2
             //valid hostname - ends with myshopify.com and does not contain characters other than letters (a-z), numbers (0-9), dots, and hyphens.
             if (!App.AllowHostName(shop))
             {
                 //exit - send this request home
                 return RedirectToAction("Index", "Home");        
             }
-
-            #region BuildNameValueCollection
-            //verify if hmac is valid - key and value can change depending on shopify
-            var verify = new NameValueCollection();
-            verify.Add("code", code);
-            verify.Add("hmac", hmac);
-            verify.Add("shop", shop);
-            verify.Add("timestamp", timestamp);
-            #endregion
-
-            if (!App.VerifyHmac(verify))
+          
+            //security check 3
+            if (!App.VerifyHmac(Request.QueryString))
             {
                 //exit
                 return RedirectToAction("Index", "Home");
