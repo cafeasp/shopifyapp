@@ -53,11 +53,8 @@ namespace BasicApp.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //get access token url
-            string accessTokenUrl = App.GetAccessTokenUrl(shop);
-
             //make a call to Shopify and get back shop token
-            string token = new ShopifyClient(shop).GetToken(accessTokenUrl,code);
+            string token = new ShopifyClient(shop).GetToken(App.GetAccessTokenUrl(), code);
 
             //save token to db
 

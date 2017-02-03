@@ -76,9 +76,9 @@ namespace BasicApp.AppTools
             return calculatedSignature.ToUpper() == queryString.Get("hmac").ToUpper();
         }
 
-        public static string GetAccessTokenUrl(string shop)
+        public static string GetAccessTokenUrl()
         {
-            return string.Format("oauth/access_token", shop);
+            return "oauth/access_token";
         }
     }
 }
