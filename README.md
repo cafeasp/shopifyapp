@@ -1,5 +1,6 @@
 # shopifyapp
 ASP.NET MVC 4 C# Project - Basic template to build a Shopify App. It should give you a good idea on how to create/setup your own project.
+I will be adding other basic task.
 ## Getting Started
 Make sure your computer has git software and Visual Studio Community 2015 or better. Run this command 
 ```
