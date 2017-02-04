@@ -19,7 +19,7 @@ For example: C:\myapp\app.config (make sure this file name and path is the same 
 ```
 ```
 web.config example:
-<appSettings file="c:\myapp\app.config">
+<appSettings file="c:\MyAppSettings\app.config">
     <add key="webpages:Version" value="3.0.0.0" />
     <add key="webpages:Enabled" value="false" />
     <add key="ClientValidationEnabled" value="true" />
