@@ -7,19 +7,26 @@ using System.Text.RegularExpressions;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Text;
+using BasicApp.Models;
+using Newtonsoft.Json;
 
 namespace BasicApp.AppTools
 {
     /// <summary>
-    /// Your app settings
+    /// Your app settings save in app.config file. You can also save these in a database.
     /// </summary>
     public static class App
     {
-        public static string AppId = ConfigurationManager.AppSettings["AppId"];
-        public static string AppSecret = ConfigurationManager.AppSettings["AppSecret"];
-        public static string AppScope = ConfigurationManager.AppSettings["AppScope"];
-        public static string AppDomain = ConfigurationManager.AppSettings["AppDomain"];
-        public static string AppInstallControllerName = ConfigurationManager.AppSettings["AppInstallControllerName"];
+        public static string Id = ConfigurationManager.AppSettings["Id"];
+        public static string Secret = ConfigurationManager.AppSettings["Secret"];
+        public static string Scope = ConfigurationManager.AppSettings["Scope"];
+        public static string Domain = ConfigurationManager.AppSettings["Domain"];
+        public static string InstallControllerName = ConfigurationManager.AppSettings["InstallControllerName"];
+        public static string Name = ConfigurationManager.AppSettings["Name"];
+        public static string Price = ConfigurationManager.AppSettings["Price"];
+        public static string TrialDays = ConfigurationManager.AppSettings["TrialDays"];
+        public static string Test = ConfigurationManager.AppSettings["Test"];
+        
 
         public static string GetInstallState()
         {
@@ -31,10 +38,10 @@ namespace BasicApp.AppTools
                 string.Format(
                 "https://{0}/admin/oauth/authorize?client_id={1}&scope={2}&redirect_uri=https://{3}/{4}/auth&state={5}",
                 shop,
-                AppId,
-                AppScope,
-                AppDomain,
-                AppInstallControllerName,
+                Id,
+                Scope,
+                Domain,
+                InstallControllerName,
                 GetInstallState());
             return redirectUrl;
         }
@@ -66,7 +73,7 @@ namespace BasicApp.AppTools
                .OrderBy(kvp => kvp.Key)
                .Select(kvp => $"{kvp.Key}={kvp.Value}");
 
-            var hmacHasher = new HMACSHA256(Encoding.UTF8.GetBytes(AppSecret));
+            var hmacHasher = new HMACSHA256(Encoding.UTF8.GetBytes(Secret));
             var hash = hmacHasher.ComputeHash(Encoding.UTF8.GetBytes(string.Join("&", kvps)));
 
             var calculatedSignature = BitConverter.ToString(hash).Replace("-", "");
@@ -77,6 +84,31 @@ namespace BasicApp.AppTools
         public static string GetAccessTokenUrl()
         {
             return "oauth/access_token";
+        }
+        public static string CreateChargeJson(string shop)
+        {
+            var charge = new ChargeModel();
+            charge.Name = Name;
+            charge.Price = Price;
+            charge.ReturnUrl = string.Format("https://{0}/{1}/AuthResult?shop={2}", Domain,InstallControllerName,shop);
+            charge.Test = Test;
+            charge.TrialDays = TrialDays;
+
+            var c = new { recurring_application_charge = charge };
+            return JsonConvert.SerializeObject(c, Formatting.Indented);
+        }
+        public static string CreateActiveJson(ChargeResultModel model)
+        {
+            var updateModel = model;
+            updateModel.recurring_application_charge.ConfirmationUrl = null;
+            return JsonConvert.SerializeObject(updateModel, Formatting.Indented);
+        }
+
+        //you should get this value from db not a text file
+        //this is only for demo
+        public static string GetTokenDEMO()
+        {           
+            return System.IO.File.ReadAllText("C:\\MyAppSettings\\token.txt");
         }
     }
 }

@@ -10,6 +10,7 @@ namespace BasicApp.Controllers
     {
         public ActionResult Index()
         {
+            
             return View();
         }
 
@@ -23,6 +24,12 @@ namespace BasicApp.Controllers
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+        public ActionResult ErrorPage()
+        {
+            
 
             return View();
         }

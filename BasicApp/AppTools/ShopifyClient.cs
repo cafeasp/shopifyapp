@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using RestSharp;
 using Newtonsoft.Json;
+using BasicApp.Models;
 
 namespace BasicApp.AppTools
 {
@@ -32,14 +33,21 @@ namespace BasicApp.AppTools
         {
             Request = CreateRequest(resource, Method.POST);
             //add other base on call           
-            Request.AddParameter("application/x-www-form-urlencoded", "client_id=" + App.AppId + "&client_secret=" + App.AppSecret + "&code=" + code, ParameterType.RequestBody);
+            Request.AddParameter("application/x-www-form-urlencoded", "client_id=" + App.Id + "&client_secret=" + App.Secret + "&code=" + code, ParameterType.RequestBody);
 
             Response = Client.Execute(Request);
             var r = JsonConvert.DeserializeObject<dynamic>(Response.Content);
             var accessToken = r.access_token;
             return (string)accessToken;
         }
-
+        public IRestResponse CreateCharge(string chargeJson,string token)
+        {
+            var request = CreateRequest("recurring_application_charges.json", Method.POST);
+            request.AddHeader("X-Shopify-Access-Token", token);
+            request.AddParameter("application/json", chargeJson, ParameterType.RequestBody);
+            var result = Client.Execute(request);
+            return result;
+        }
         public RestRequest CreateRequest(string endPoint,Method methodType)
         {
             var res = new RestRequest(endPoint,methodType);
@@ -47,6 +55,23 @@ namespace BasicApp.AppTools
             res.AddHeader("Content-Type", "application/json");
             return res;
         }
+
+        public IRestResponse CheckChargeById(string charge_id)
+        {
+            var request = CreateRequest("recurring_application_charges/" + charge_id + ".json", Method.GET);
+            request.AddHeader("X-Shopify-Access-Token", Token);
+            return Client.Execute(request);
+        }
+
+
+        public System.Net.HttpStatusCode ActivateChargeById(string charge_id,string json)
+        {
+            var request = CreateRequest("recurring_application_charges/" + charge_id + "/activate.json", Method.POST);
+            request.AddHeader("X-Shopify-Access-Token", Token);
+            request.AddParameter("application/json", json, ParameterType.RequestBody);
+            return Client.Execute(request).StatusCode;
+        }
+
 
     }
 }
