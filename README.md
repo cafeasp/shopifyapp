@@ -39,3 +39,12 @@ to allow your app to be available on the public domain. ngrok.com has a free and
    <add key="AppInstallControllerName" value="shopify" />
 </appSettings>
 ```
+## What can it do (work in progress)
+- Authenticate with Shopify first
+- Send customer to Shopify intall page
+- Verify call is from Shopify
+- Request a Shopify token
+- Create a charge
+- Send customer to accept or decline charge
+- If 'accepted' activate charge
+- Send customer to your app
