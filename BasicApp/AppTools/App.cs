@@ -48,7 +48,7 @@ namespace BasicApp.AppTools
         public static bool AllowHostName(string shop)
         {
             
-            Match match = Regex.Match(shop, @"^[a-z\d_.-]+myshopify.com$");
+            Match match = Regex.Match(shop, @"^[a-z\d_.-]+[.]myshopify[.]com$");
             return match.Success;
         }
 
