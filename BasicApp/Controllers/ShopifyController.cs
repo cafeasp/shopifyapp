@@ -12,6 +12,7 @@ namespace BasicApp.Controllers
 {
     public class ShopifyController : Controller
     {
+        public MongoClientContext dbContext = new MongoClientContext();
         //shopify client
         private ShopifyClient client;
         //Step 1 - Shop wants to install app
@@ -25,6 +26,7 @@ namespace BasicApp.Controllers
             //Save GetInstallState value
             var state = HttpUtility.ParseQueryString(redirectUrl).Get("state");
             //save state to database - later you will need to compare value for security reasons
+            
 
             return Redirect(redirectUrl);
         }
