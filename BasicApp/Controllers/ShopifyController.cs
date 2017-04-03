@@ -60,7 +60,7 @@ namespace BasicApp.Controllers
             //allow customer to view our app
             //return RedirectToAction("Index", "AppPortal");
 
-            //if you are charging for the app uncomment line # 58 and continue below
+            //if you are charging for the app uncomment continue below
             string chargeJson = App.CreateChargeJson(shop);
 
             //Call Shopify with json - charge and check if it was created OK
@@ -88,14 +88,14 @@ namespace BasicApp.Controllers
         {
             //find out if the customer accepted the chanrge
             //pull up shop token from db
-            string token = App.GetTokenDEMO();
+            string token = App.GetTokenDEMO(shop);
             client = new ShopifyClient(shop,token);
             var check = client.CheckChargeById(charge_id);
             var chargeStatus = JsonConvert.DeserializeObject<ChargeResultModel>(check.Content);
             if(chargeStatus.recurring_application_charge.Status == "accepted")
             {
                 //customer accepted the charge
-                //make sure you save this charge id
+                //make sure you save this charge id and activated
 
                 var active = client.ActivateChargeById(charge_id, App.CreateActiveJson(chargeStatus));
                 if(active == System.Net.HttpStatusCode.OK)

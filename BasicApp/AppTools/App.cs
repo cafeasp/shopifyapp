@@ -106,9 +106,10 @@ namespace BasicApp.AppTools
 
         //you should get this value from db not a text file
         //this is only for demo
-        public static string GetTokenDEMO()
+        public static string GetTokenDEMO(string shop)
         {           
-            return System.IO.File.ReadAllText("C:\\MyAppSettings\\token.txt");
+            //call your db with the specific shop to pull the correct token
+            return System.IO.File.ReadAllText("C:\\MyAppSettings\\token.txt");//this is only for demo
         }
     }
 }
