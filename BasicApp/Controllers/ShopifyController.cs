@@ -26,7 +26,7 @@ namespace BasicApp.Controllers
             //Save GetInstallState value
             var state = HttpUtility.ParseQueryString(redirectUrl).Get("state");
             //save state to database - later you will need to compare value for security reasons
-            
+            dbContext.SaveInstallState(shop, state);//not tested yet
 
             return Redirect(redirectUrl);
         }
