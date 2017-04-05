@@ -36,7 +36,7 @@ namespace BasicApp.AppTools
         {
             string redirectUrl =
                 string.Format(
-                "https://{0}/admin/oauth/authorize?client_id={1}&scope={2}&redirect_uri=https://{3}/{4}/auth&state={5}",
+                "https://{0}/admin/oauth/authorize?client_id={1}&scope={2}&state={5}&redirect_uri=https://{3}/{4}/auth",
                 shop,
                 Id,
                 Scope,
