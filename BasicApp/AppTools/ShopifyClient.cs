@@ -63,6 +63,17 @@ namespace BasicApp.AppTools
             return Client.Execute(request);
         }
 
+        public IRestResponse GetProductCount()
+        {
+            var request = CreateRequest("products/count.json", Method.GET);
+            return Client.Execute(request);
+        }
+        public IRestResponse GetProduct(int page=1,int limit=50)
+        {
+            var request = CreateRequest("products.json?page=" + page + "&limit=" + limit, Method.GET);
+            return Client.Execute(request);
+        }
+
 
         public System.Net.HttpStatusCode ActivateChargeById(string charge_id,string json)
         {
@@ -72,6 +83,6 @@ namespace BasicApp.AppTools
             return Client.Execute(request).StatusCode;
         }
 
-
+       
     }
 }
